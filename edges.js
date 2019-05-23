@@ -46,7 +46,11 @@ const FRAGMENT_SHADER_SOURCE = `
   }
 `;
 
-main();
+try {
+  main();
+} catch (error) {
+  reportError(error);
+}
 
 function main() {
   const canvas = document.getElementById("main");
@@ -67,7 +71,7 @@ function main() {
     video.srcObject = stream;
     video.play();
   }
-  startVideo().catch(console.error);
+  startVideo().catch(reportError);
 
   function paint() {
     gl.useProgram(program);
@@ -90,9 +94,25 @@ function main() {
     }
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
-    window.requestAnimationFrame(paint);
+    window.requestAnimationFrame(tryPaint);
   }
-  window.requestAnimationFrame(paint);
+
+  function tryPaint() {
+    try {
+      paint();
+    } catch (error) {
+      reportError(error);
+    }
+  }
+
+  window.requestAnimationFrame(tryPaint);
+}
+
+function reportError(error) {
+  const reporter = document.createElement("div");
+  reporter.setAttribute("class", "error");
+  reporter.textContent = error.toString();
+  document.body.insertBefore(reporter, document.body.firstChild);
 }
 
 function buildProgram(gl) {
