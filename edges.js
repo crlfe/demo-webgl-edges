@@ -41,7 +41,7 @@ const FRAGMENT_SHADER_SOURCE = `
 
   void main(void) {
     vec4 color = getDelta(uSampler, vTexCoord);
-    float value = max(max(color.r, color.g), color.b);
+    float value = 1.0 - max(max(color.r, color.g), color.b);
     gl_FragColor = vec4(value, value, value, 1.0);
   }
 `;
