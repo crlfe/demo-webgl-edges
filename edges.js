@@ -71,17 +71,44 @@ function main() {
   const canvas = document.getElementById("main");
   const gl = canvas.getContext("webgl");
 
-  const program = buildProgram(gl);
-  const programInfo = buildProgramInfo(gl, program);
-  const vertices = buildVertices(gl);
-  const videoTexture = buildVideoTexture(gl);
-
   const video = document.createElement("video");
-  let videoReady = false;
-
   startVideoCapture(video).catch(reportError);
 
+  // Variables used to store graphics state.
+  let program;
+  let programInfo;
+  let vertices;
+  let videoTexture;
+  let animationFrameId;
+
+  // The WebGL graphics context may be lost at any moment. If we handle the
+  // webglcontextlost event, the browser may restore the context later and let
+  // us start rendering again.
+  canvas.addEventListener("webglcontextlost", onContextLost, false);
+  canvas.addEventListener("webglcontextrestored", onContextRestored, false);
+
+  start();
+
+  function onContextLost() {
+    window.cancelAnimationFrame(animationFrameId);
+    animationFrameId = 0;
+  }
+
+  function onContextRestored() {
+    start();
+  }
+
+  function start() {
+    program = buildProgram(gl);
+    programInfo = buildProgramInfo(gl, program);
+    vertices = buildVertices(gl);
+    videoTexture = buildVideoTexture(gl);
+    animationFrameId = window.requestAnimationFrame(paint);
+  }
+
   function paint() {
+    animationFrameId = 0;
+
     gl.useProgram(program);
     useVertices(gl, programInfo, vertices);
     useVideoTexture(gl, programInfo, videoTexture);
@@ -102,10 +129,15 @@ function main() {
     }
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
-    window.requestAnimationFrame(paint);
-  }
+    const code = gl.getError();
+    if (code != gl.NO_ERROR) {
+      if (!gl.isContextLost()) {
+        throw new Error("WebGL Error: " + error);
+      }
+    }
 
-  window.requestAnimationFrame(paint);
+    animationFrameId = window.requestAnimationFrame(paint);
+  }
 }
 
 async function startVideoCapture(videoElement) {
@@ -128,7 +160,9 @@ function buildProgram(gl) {
   );
   gl.linkProgram(program);
   if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    throw new Error(gl.getProgramInfoLog(program));
+    if (!gl.isContextLost()) {
+      throw new Error(gl.getProgramInfoLog(program));
+    }
   }
   return program;
 }
@@ -138,7 +172,9 @@ function buildShader(gl, type, source) {
   gl.shaderSource(shader, source);
   gl.compileShader(shader);
   if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    throw new Error(gl.getShaderInfoLog(shader));
+    if (!gl.isContextLost()) {
+      throw new Error(gl.getShaderInfoLog(shader));
+    }
   }
   return shader;
 }
