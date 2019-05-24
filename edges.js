@@ -46,10 +46,25 @@ const FRAGMENT_SHADER_SOURCE = `
   }
 `;
 
-try {
-  main();
-} catch (error) {
-  reportError(error);
+// Display unhandled errors on both page and console.
+window.addEventListener("error", event => reportError(event.error), true);
+
+main();
+
+// Displays an error in the page and logs it to console.
+function reportError(error) {
+  console.error(error);
+
+  const reporter = document.createElement("p");
+  reporter.setAttribute("class", "error");
+  if (typeof error.stack === "string" && error.stack.startsWith("Error:")) {
+    // Use the stack trace if it looks human-readable (like Chrome).
+    reporter.textContent = error.stack;
+  } else {
+    // Otherwise, use the standard format without a stack trace.
+    reporter.textContent = error.toString();
+  }
+  document.body.insertBefore(reporter, document.getElementById("main"));
 }
 
 function main() {
@@ -64,14 +79,7 @@ function main() {
   const video = document.createElement("video");
   let videoReady = false;
 
-  async function startVideo() {
-    const stream = await navigator.mediaDevices.getUserMedia({
-      video: true
-    });
-    video.srcObject = stream;
-    video.play();
-  }
-  startVideo().catch(reportError);
+  startVideoCapture(video).catch(reportError);
 
   function paint() {
     gl.useProgram(program);
@@ -94,25 +102,18 @@ function main() {
     }
     gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
 
-    window.requestAnimationFrame(tryPaint);
+    window.requestAnimationFrame(paint);
   }
 
-  function tryPaint() {
-    try {
-      paint();
-    } catch (error) {
-      reportError(error);
-    }
-  }
-
-  window.requestAnimationFrame(tryPaint);
+  window.requestAnimationFrame(paint);
 }
 
-function reportError(error) {
-  const reporter = document.createElement("div");
-  reporter.setAttribute("class", "error");
-  reporter.textContent = error.toString();
-  document.body.insertBefore(reporter, document.body.firstChild);
+async function startVideoCapture(videoElement) {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: true
+  });
+  videoElement.srcObject = stream;
+  videoElement.play();
 }
 
 function buildProgram(gl) {
