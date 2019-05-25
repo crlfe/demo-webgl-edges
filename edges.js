@@ -89,7 +89,18 @@ function main() {
 
   start();
 
-  function onContextLost() {
+  // When enabled, this block simulates context loss and restoration, which
+  // helps shake out bugs in handling those usually-rare events.
+  if (false) {
+    const fakeLoseContext = gl.getExtension("WEBGL_lose_context");
+    setInterval(() => {
+      fakeLoseContext.loseContext();
+      setTimeout(() => fakeLoseContext.restoreContext(), 250);
+    }, 971);
+  }
+
+  function onContextLost(event) {
+    event.preventDefault();
     window.cancelAnimationFrame(animationFrameId);
     animationFrameId = 0;
   }
