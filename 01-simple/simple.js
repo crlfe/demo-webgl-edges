@@ -7,13 +7,17 @@
 const VERTEX_SHADER_SOURCE = `
   precision mediump float;
 
+  uniform vec2 uSteps;
   attribute vec2 aPosition;
   attribute vec2 aTexCoord;
-  varying vec2 vTexCoord;
+  varying vec2 vSampleCoords[4];
 
   void main(void) {
     gl_Position = vec4(aPosition, 0.0, 1.0);
-    vTexCoord = aTexCoord;
+    vSampleCoords[0] = aTexCoord + vec2(uSteps.x, 0);
+    vSampleCoords[1] = aTexCoord - vec2(uSteps.x, 0);
+    vSampleCoords[2] = aTexCoord + vec2(0, uSteps.y);
+    vSampleCoords[3] = aTexCoord - vec2(0, uSteps.y);
   }
 `;
 
@@ -21,26 +25,15 @@ const FRAGMENT_SHADER_SOURCE = `
   precision mediump float;
 
   uniform sampler2D uSampler;
-  uniform vec2 uSteps;
-  varying vec2 vTexCoord;
-
-  vec4 getDeltaX(sampler2D sampler, vec2 coord) {
-    return texture2D(sampler, coord + vec2(uSteps.x, 0.0)) -
-           texture2D(sampler, coord - vec2(uSteps.x, 0.0));
-  }
-
-  vec4 getDeltaY(sampler2D sampler, vec2 coord) {
-    return texture2D(sampler, coord + vec2(0, uSteps.y)) -
-           texture2D(sampler, coord - vec2(0, uSteps.y));
-  }
-
-  vec4 getDelta(sampler2D sampler, vec2 coord) {
-    return abs(getDeltaX(sampler, coord)) +
-           abs(getDeltaY(sampler, coord));
-  }
+  varying vec2 vSampleCoords[4];
 
   void main(void) {
-    vec4 color = getDelta(uSampler, vTexCoord);
+    vec4 p0 = texture2D(uSampler, vSampleCoords[0]);
+    vec4 p1 = texture2D(uSampler, vSampleCoords[1]);
+    vec4 p2 = texture2D(uSampler, vSampleCoords[2]);
+    vec4 p3 = texture2D(uSampler, vSampleCoords[3]);
+
+    vec4 color = abs(p1 - p0) + abs(p2 - p3);
     float value = 1.0 - max(max(color.r, color.g), color.b);
     gl_FragColor = vec4(value, value, value, 1.0);
   }
@@ -152,8 +145,10 @@ function main() {
 }
 
 async function startVideoCapture(videoElement) {
+  // Suggest a power-of-two resolution to the camera, since that may improve
+  // WebGL performance.
   const stream = await navigator.mediaDevices.getUserMedia({
-    video: true
+    video: { width: 1024, height: 512 }
   });
   videoElement.srcObject = stream;
   videoElement.play();
@@ -229,8 +224,8 @@ function useVertices(gl, programInfo, vertices) {
 function buildVideoTexture(gl) {
   const texture = gl.createTexture();
   gl.bindTexture(gl.TEXTURE_2D, texture);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
   gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 
