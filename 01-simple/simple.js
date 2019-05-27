@@ -57,7 +57,9 @@ function reportError(error) {
     // Otherwise, use the standard format without a stack trace.
     reporter.textContent = error.toString();
   }
-  document.body.insertBefore(reporter, document.getElementById("main"));
+
+  const canvas = document.getElementById("display");
+  canvas.parentNode.insertBefore(reporter, canvas);
 }
 
 function main() {
