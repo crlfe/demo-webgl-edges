@@ -68,7 +68,7 @@ function reportError(error) {
 }
 
 function main() {
-  const canvas = document.getElementById("main");
+  const canvas = document.getElementById("display");
   const gl = canvas.getContext("webgl");
 
   const video = document.createElement("video");

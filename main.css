@@ -1,0 +1,54 @@
+html {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 1em auto;
+  padding: 0 1em;
+  max-width: 50em;
+  min-width: 18em;
+  color: #222;
+  font-family: "sans-serif";
+  line-height: 1.5;
+
+  display: grid;
+  grid-template-areas: "_ header" "menu main";
+  grid-template-rows: auto 1fr;
+  grid-template-cols: auto 1fr;
+  grid-gap: 1em;
+}
+
+@media (max-width: 640px) {
+  body {
+    grid-template-areas: "menu" "header" "main";
+  }
+}
+
+body > h1 {
+  grid-area: header;
+  margin: 0;
+}
+body > nav.menu {
+  grid-area: menu;
+}
+body > main {
+  grid-area: main;
+}
+body > main > *:first-child {
+  margin-top: 0;
+}
+
+nav.menu > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+main > canvas {
+  max-width: 100%;
+}
+
+.error {
+  white-space: pre-line;
+}
