@@ -1,0 +1,74 @@
+/**
+ * @author Chris Wolfe
+ * @license Apache-2.0
+ */
+
+body {
+  margin: 1em auto;
+  padding: 0 1em;
+  max-width: 48em;
+  min-width: 18em;
+  font-family: sans-serif;
+  line-height: 1.5;
+
+  display: grid;
+  grid-template-areas: ". header" "menu main" ". footer";
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: auto 1fr;
+  grid-gap: 1em;
+}
+
+@media (max-width: 640px) {
+  body {
+    grid-template-areas: "menu" "header" "main" "footer";
+  }
+}
+
+body > header.page {
+  grid-area: header;
+}
+body > nav.menu {
+  grid-area: menu;
+}
+body > main {
+  grid-area: main;
+}
+body > footer.site {
+  grid-area: footer;
+}
+
+h1 {
+  margin: 0;
+}
+
+header.page > .date {
+  margin: 0;
+  color: #666;
+  font-size: 75%;
+  font-weight: bold;
+}
+
+footer.site {
+  border-top: 1px solid #000;
+  padding-top: 0.5em;
+  font-size: 75%;
+}
+
+
+main > *:first-child {
+  margin-top: 0;
+}
+
+nav.menu > ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+main > canvas {
+  max-width: 100%;
+}
+
+.error {
+  white-space: pre-line;
+}

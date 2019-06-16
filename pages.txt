@@ -1,0 +1,3 @@
+# This is the list of examples shown in the menu.
+
+01-simple/
