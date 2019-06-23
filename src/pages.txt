@@ -1,3 +1,4 @@
 # This is the list of examples shown in the menu.
 
-01-simple/
+simple-1/
+simple-2/

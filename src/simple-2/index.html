@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script type="application/ld+json">
+      {
+        "headline": "Simple 2",
+        "datePublished": "2019-06-23T16:00:00Z"
+      }
+    </script>
+    <script type="module" data-build src="/layout.js"></script>
+    <script type="module" src="index.js"></script>
+  </head>
+  <body>
+    <main>
+      <p>
+        Simple edge detection using horizontal and vertical differences. This
+        uses a dependent texture read to simplify the code. While I was
+        expecting a performance drop, a very quick benchmark on my laptop
+        suggests a slight improvement (vs simple-1).
+      </p>
+      <canvas id="display"></canvas>
+    </main>
+  </body>
+</html>

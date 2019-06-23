@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script type="application/ld+json">
+      {
+        "headline": "Simple 1",
+        "datePublished": "2019-05-27T16:00:00Z"
+      }
+    </script>
+    <script type="module" data-build src="/layout.js"></script>
+    <script type="module" src="index.js"></script>
+  </head>
+  <body>
+    <main>
+      <p>
+        Simple edge detection using horizontal and vertical differences. This
+        uses multiple varying texture coordinates in the fragment shader, which
+        was hoped to offer better performance. A quick benchmark on my laptop
+        suggests it is actually slower than a dependent read (simple-2).
+      </p>
+      <canvas id="display"></canvas>
+    </main>
+  </body>
+</html>
