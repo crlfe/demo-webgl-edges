@@ -3,29 +3,35 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Simple - Edge Detection with WebGL</title>
+    <title>Simple 1 - Edge Detection with WebGL</title>
     <script type="application/ld+json">
       {
-        "headline": "Simple",
+        "headline": "Simple 1",
         "datePublished": "2019-05-27T16:00:00Z"
       }
     </script>
-    <script type="module" src="simple.js"></script>
+    <script type="module" src="index.js"></script>
     <link rel="stylesheet" href="../layout.css" />
   </head>
   <body>
     <header class="page">
-      <h1>Simple</h1>
+      <h1>Simple 1</h1>
       <p class="date">May 27, 2019</p>
     </header>
     <nav class="menu">
       <ul>
         <li><a href="../">Home</a></li>
-        <li><a href="">Simple</a></li>
+        <li><a href="">Simple 1</a></li>
+        <li><a href="../simple-2/">Simple 2</a></li>
       </ul>
     </nav>
     <main>
-      <p>Simple edge detection using horizontal and vertical differences.</p>
+      <p>
+        Simple edge detection using horizontal and vertical differences. This
+        uses multiple varying texture coordinates in the fragment shader, which
+        was hoped to offer better performance. A quick benchmark on my laptop
+        suggests it is actually slower than a dependent read (simple-2).
+      </p>
       <canvas id="display"></canvas>
     </main>
     <footer class="site">
